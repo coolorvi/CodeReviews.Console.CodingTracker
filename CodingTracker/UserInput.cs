@@ -6,6 +6,7 @@ namespace CodingTracker
     {
         public static void Main()
         {
+            var cc = new CodingController();
             var isRunning = true;
             while (isRunning) 
             {
@@ -25,28 +26,19 @@ namespace CodingTracker
                 switch (choiceAction) {
                     case "Exit":
                         isRunning = false;
+                        AnsiConsole.Clear();
                         break;
                     case "Create a new session":
-                        var startDate = AnsiConsole.Prompt(new TextPrompt<string>("Enter the session start date [grey](DD:MM:YYYY)[/]"));
-                        // Here validate startDate
-                        var startTime = AnsiConsole.Prompt(new TextPrompt<string>("Enter the session start time [grey](HH:MM)[/]:"));
-                        // Here validate startTime
-                        var endDate = AnsiConsole.Prompt(new TextPrompt<string>("Enter the session end date [grey](DD:MM:YYYY)[/]"));
-                        // Here validate endDate
-                        var endTime = AnsiConsole.Prompt(new TextPrompt<string>("Enter the session end time [grey](HH:MM)[/]"));
-                        // Here validate endTime
+                        cc.CreateSession();
                         break;
                     case "Read all exsisting sessions":
-                        // Call ReadAllSessions function
+                        cc.ReadAllSessions();
                         break;
                     case "Update the session":
-
+                        cc.UpdateSession();
                         break;
                     case "Delete the session":
-
-                        break;
-                    default:
-                        AnsiConsole.Markup("[bold red]Invalid choice of action[/]");
+                        cc.DeleteSession();
                         break;
                 }
             }
