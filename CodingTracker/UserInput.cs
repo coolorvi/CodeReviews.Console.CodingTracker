@@ -6,11 +6,13 @@ namespace CodingTracker
     {
         public static void Main()
         {
-            var cc = new CodingController();
+            var db = new Database();
+            db.Initialize();
+            var cc = new CodingController(db);
             var isRunning = true;
             while (isRunning) 
             {
-                AnsiConsole.Clear();
+                //AnsiConsole.Clear();
 
                 AnsiConsole.Write(new Rule("[bold violet]MAIN MENU[/]").RuleStyle("violet").LeftJustified());
 
@@ -31,7 +33,7 @@ namespace CodingTracker
                     case "Create a new session":
                         cc.CreateSession();
                         break;
-                    case "Read all exsisting sessions":
+                    case "Read all existing sessions":
                         cc.ReadAllSessions();
                         break;
                     case "Update the session":

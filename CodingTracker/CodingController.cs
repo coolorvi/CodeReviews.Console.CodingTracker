@@ -5,13 +5,22 @@ namespace CodingTracker
 {
     public class CodingController
     {
-        public TimeSpan CalculateDuration(string timeStart, string timeEnd)
+        private readonly Database _db;
+
+        public CodingController(Database db)
+        {
+            _db = db;
+        }
+        public string CalculateDuration(string timeStart, string timeEnd)
         {
             DateTime parseTimeStart = DateTime.ParseExact(timeStart, "dd.MM.yyyy HH:mm", CultureInfo.InvariantCulture);
             DateTime parseTimeEnd = DateTime.ParseExact(timeEnd, "dd.MM.yyyy HH:mm", CultureInfo.InvariantCulture);
 
             TimeSpan duration = parseTimeEnd - parseTimeStart;
-            return duration;
+
+            var durationString = $"{duration.Hours.ToString()} hours {duration.Minutes.ToString()} minutes";
+
+            return durationString;
         }
         public void CreateSession()
         {
@@ -19,30 +28,33 @@ namespace CodingTracker
             // Here validate timeStart
             var timeEnd = AnsiConsole.Prompt(new TextPrompt<string>("Enter the date and time of the session end [grey](dd.MM.yyyy HH:mm)[/]:"));
             // Here validate timeEnd
-            TimeSpan durationSession = CalculateDuration(timeStart, timeEnd);
-            // Here call CreateRecordSession(timeStart, timeEnd, durationSession)
+            string durationSession = CalculateDuration(timeStart, timeEnd);
+            _db.CreateRecordSession(timeStart, timeEnd, durationSession);
         }
         public void ReadAllSessions()
         {
-            // Here call ReadListSessions
-            /* var tableSessions = new Table();
+            List<CodingSession> listSessions = _db.ReadListSessions();
+
+            var tableSessions = new Table();
             tableSessions.AddColumn("ID");
             tableSessions.AddColumn("Time of the session Start");
             tableSessions.AddColumn("Time of the session End");
             tableSessions.AddColumn("Duration of the session");
+
             foreach (CodingSession session in listSessions)
             {
-                tableSessions.AddRow(session.ID.ToString(), session.StartTime, session.EndTime, session.Duration);
+                tableSessions.AddRow(session.ID.ToString(), session.StartTime.ToString(), session.EndTime.ToString(), session.Duration.ToString());
             }
-            AnsiConsole.Write(tableSessions); */
+            AnsiConsole.Write(tableSessions);
         }
         public void UpdateSession()
         {
-            // Here call ReadListSessions
+            List<CodingSession> listSessions = _db.ReadListSessions();
+
             CodingSession choiceSession = AnsiConsole.Prompt(
                 new SelectionPrompt<CodingSession>()
                 .Title("Which session do you want to update?")
-                .AddChoices(/*listSessions*/)
+                .AddChoices(listSessions)
                 );
             var choiceChange = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
@@ -53,32 +65,37 @@ namespace CodingTracker
 
             var newTimeStart = choiceSession.StartTime;
             var newTimeEnd = choiceSession.EndTime;
+            var newDuration = choiceSession.Duration;
 
             switch (choiceChange)
             {
                 case "Time of session start":
                     newTimeStart = AnsiConsole.Prompt(new TextPrompt<string>("Enter a new session start date and time [grey](dd.MM.yyyy HH:mm)[/]:"));
                     // Here validate newTimeStart
-                    CalculateDuration(newTimeStart, newTimeEnd);
-                    // Here call UpdateRecordSession
+                    newDuration = CalculateDuration(newTimeStart, newTimeEnd);
+
+                    _db.UpdateRecordSession(choiceSession.ID, newTimeStart, newTimeEnd, newDuration);
                     break;
                 case "Time of session end":
                     newTimeEnd = AnsiConsole.Prompt(new TextPrompt<string>("Enter a new session end date and time [grey](dd.MM.yyyy HH:mm)[/]:"));
                     // Here validate newTimeEnd
-                    CalculateDuration(newTimeStart, newTimeEnd);
-                    // Here call UpdateRecordSession
+                    newDuration = CalculateDuration(newTimeStart, newTimeEnd);
+
+                    _db.UpdateRecordSession(choiceSession.ID, newTimeStart, newTimeEnd, newDuration);
                     break;
             }
         }
         public void DeleteSession()
         {
-            // Here call ReadListSessions
+            List<CodingSession> listSessions = _db.ReadListSessions();
+
             CodingSession choiceSession = AnsiConsole.Prompt(
                 new SelectionPrompt<CodingSession>()
                 .Title("Which session do you want to delete?")
-                .AddChoices(/*listSession*/)
+                .AddChoices(listSessions)
                 );
-            // Here call DeleteRecordSession
+
+            _db.DeleteRecordSession(choiceSession.ID);
         }
     }
 }

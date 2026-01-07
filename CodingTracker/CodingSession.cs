@@ -1,6 +1,6 @@
 ﻿namespace CodingTracker
 {
-    internal class CodingSession
+    public class CodingSession
     {
         public required int ID { get; set; }
         public required string StartTime { get; set; }
