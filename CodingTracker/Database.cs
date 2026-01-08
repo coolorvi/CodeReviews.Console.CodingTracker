@@ -57,9 +57,9 @@ namespace CodingTracker
         {
             using IDbConnection connection = new SqliteConnection(_connectionString);
 
-            var request = "UPDATE CodingSessions SET StartTime = @TimeStart, EndTime = @TimeEnd, Duration = @DurationSession";
+            var request = "UPDATE CodingSessions SET StartTime = @TimeStart, EndTime = @TimeEnd, Duration = @DurationSession WHERE ID = @ID";
 
-            connection.Execute(request, new { TimeStart = timeStart, TimeEnd = timeEnd, DurationSession = durationSession });
+            connection.Execute(request, new { TimeStart = timeStart, TimeEnd = timeEnd, DurationSession = durationSession, ID = id });
         }
 
         public void DeleteRecordSession(int id)

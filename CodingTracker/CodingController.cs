@@ -11,6 +11,7 @@ namespace CodingTracker
         {
             _db = db;
         }
+
         public string CalculateDuration(string timeStart, string timeEnd)
         {
             DateTime parseTimeStart = DateTime.ParseExact(timeStart, "dd.MM.yyyy HH:mm", CultureInfo.InvariantCulture);
@@ -22,18 +23,36 @@ namespace CodingTracker
 
             return durationString;
         }
+
         public void CreateSession()
         {
-            var timeStart = AnsiConsole.Prompt(new TextPrompt<string>("Enter the date and time of the session start [grey](dd.MM.yyyy HH:mm)[/]:"));
-            // Here validate timeStart
-            var timeEnd = AnsiConsole.Prompt(new TextPrompt<string>("Enter the date and time of the session end [grey](dd.MM.yyyy HH:mm)[/]:"));
-            // Here validate timeEnd
+            var v = new Validation();
+            var isGetCorrectDates = false;
+            var timeStart = "";
+            var timeEnd = "";
+            var isCorrectDates = true;
+
+            while (!isGetCorrectDates)
+            {
+                timeStart = AnsiConsole.Prompt(new TextPrompt<string>("Enter the date and time of the session start [grey](dd.MM.yyyy HH:mm)[/]:"));
+                timeEnd = AnsiConsole.Prompt(new TextPrompt<string>("Enter the date and time of the session end [grey](dd.MM.yyyy HH:mm)[/]:"));
+
+                isCorrectDates = v.ValidationDates(timeStart, timeEnd);
+                isGetCorrectDates = isCorrectDates;
+            }
+
             string durationSession = CalculateDuration(timeStart, timeEnd);
             _db.CreateRecordSession(timeStart, timeEnd, durationSession);
         }
+
         public void ReadAllSessions()
         {
             List<CodingSession> listSessions = _db.ReadListSessions();
+            if (listSessions.Count() == 0)
+            {
+                AnsiConsole.MarkupLine("[red]Oops! There are no saved sessions yet.[/]");
+                return;
+            }
 
             var tableSessions = new Table();
             tableSessions.AddColumn("ID");
@@ -47,9 +66,16 @@ namespace CodingTracker
             }
             AnsiConsole.Write(tableSessions);
         }
+
         public void UpdateSession()
         {
+            var v = new Validation();
             List<CodingSession> listSessions = _db.ReadListSessions();
+            if (listSessions.Count() == 0)
+            {
+                AnsiConsole.MarkupLine("[red]Oops! There are no saved sessions yet.[/]");
+                return;
+            }
 
             CodingSession choiceSession = AnsiConsole.Prompt(
                 new SelectionPrompt<CodingSession>()
@@ -66,28 +92,45 @@ namespace CodingTracker
             var newTimeStart = choiceSession.StartTime;
             var newTimeEnd = choiceSession.EndTime;
             var newDuration = choiceSession.Duration;
+            var isGetCorrectDates = false;
 
             switch (choiceChange)
             {
                 case "Time of session start":
-                    newTimeStart = AnsiConsole.Prompt(new TextPrompt<string>("Enter a new session start date and time [grey](dd.MM.yyyy HH:mm)[/]:"));
-                    // Here validate newTimeStart
+                    while (!isGetCorrectDates)
+                    {
+                        newTimeStart = AnsiConsole.Prompt(new TextPrompt<string>("Enter a new session start date and time [grey](dd.MM.yyyy HH:mm)[/]:"));
+                        var isCorrectDate = v.ValidationDates(newTimeStart, newTimeEnd);
+                        isGetCorrectDates = isCorrectDate;
+                    }
+
                     newDuration = CalculateDuration(newTimeStart, newTimeEnd);
 
                     _db.UpdateRecordSession(choiceSession.ID, newTimeStart, newTimeEnd, newDuration);
                     break;
                 case "Time of session end":
-                    newTimeEnd = AnsiConsole.Prompt(new TextPrompt<string>("Enter a new session end date and time [grey](dd.MM.yyyy HH:mm)[/]:"));
-                    // Here validate newTimeEnd
+                    while (!isGetCorrectDates)
+                    {
+                        newTimeEnd = AnsiConsole.Prompt(new TextPrompt<string>("Enter a new session end date and time [grey](dd.MM.yyyy HH:mm)[/]:"));
+                        var isCorrectDate = v.ValidationDates(newTimeStart, newTimeEnd);
+                        isGetCorrectDates = isCorrectDate;
+                    }
+
                     newDuration = CalculateDuration(newTimeStart, newTimeEnd);
 
                     _db.UpdateRecordSession(choiceSession.ID, newTimeStart, newTimeEnd, newDuration);
                     break;
             }
         }
+
         public void DeleteSession()
         {
             List<CodingSession> listSessions = _db.ReadListSessions();
+            if (listSessions.Count() == 0)
+            {
+                AnsiConsole.MarkupLine("[red]Oops! There are no saved sessions yet.[/]");
+                return;
+            }
 
             CodingSession choiceSession = AnsiConsole.Prompt(
                 new SelectionPrompt<CodingSession>()
