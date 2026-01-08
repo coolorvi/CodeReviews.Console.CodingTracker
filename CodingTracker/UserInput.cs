@@ -12,8 +12,6 @@ namespace CodingTracker
             var isRunning = true;
             while (isRunning) 
             {
-                //AnsiConsole.Clear();
-
                 AnsiConsole.Write(new Rule("[bold violet]MAIN MENU[/]").RuleStyle("violet").LeftJustified());
 
                 var choiceAction = AnsiConsole.Prompt(
