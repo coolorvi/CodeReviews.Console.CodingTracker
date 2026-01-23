@@ -1,8 +1,7 @@
 {
   "profiles": {
     "CodingTracker": {
-      "commandName": "Project",
-      "workingDirectory": "D:\\Projects Git\\C#\\CodeReviews.Console.CodingTracker\\CodingTracker"
+      "commandName": "Project"
     }
   }
 }

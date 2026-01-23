@@ -19,7 +19,7 @@ namespace CodingTracker
 
             TimeSpan duration = parseTimeEnd - parseTimeStart;
 
-            var durationString = $"{duration.Hours.ToString()} hours {duration.Minutes.ToString()} minutes";
+            var durationString = $"{duration.TotalHours.ToString()} hours {duration.Minutes.ToString()} minutes";
 
             return durationString;
         }
